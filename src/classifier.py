@@ -84,8 +84,11 @@ def main(args):
                 end_index = min((i+1)*args.batch_size, nrof_images)
                 paths_batch = paths[start_index:end_index]
                 images = facenet.load_data(paths_batch, False, False, args.image_size)
-                feed_dict = { images_placeholder:images, phase_train_placeholder:False }
-                emb_array[start_index:end_index,:] = sess.run(embeddings, feed_dict=feed_dict)
+                feed_dict = {
+                    images_placeholder: images,
+                    phase_train_placeholder: False
+                }
+                emb_array[start_index:end_index, :] = sess.run(embeddings, feed_dict=feed_dict)
             
             classifier_filename_exp = os.path.expanduser(args.classifier_filename)
 

@@ -261,16 +261,16 @@ def load_data(image_paths, do_random_crop, do_random_flip, image_size, do_prewhi
     nrof_samples = len(image_paths)
     images = np.zeros((nrof_samples, image_size, image_size, 3))
     for i in range(nrof_samples):
-        for tmp_img in os.listdir(image_paths[i]):
-            if ".jpg" in tmp_img:
-                img = misc.imread("{}\\{}".format(image_paths[i], tmp_img))
-                if img.ndim == 2:
-                    img = to_rgb(img)
-                if do_prewhiten:
-                    img = prewhiten(img)
-                img = crop(img, do_random_crop, image_size)
-                img = flip(img, do_random_flip)
-                images[i, :, :, :] = img
+        # for tmp_img in os.listdir(image_paths[i]):
+        if ".jpg" in image_paths[i]:
+            img = misc.imread(image_paths[i])
+            if img.ndim == 2:
+                img = to_rgb(img)
+            if do_prewhiten:
+                img = prewhiten(img)
+            img = crop(img, do_random_crop, image_size)
+            img = flip(img, do_random_flip)
+            images[i, :, :, :] = img
     return images
 
 
@@ -359,8 +359,10 @@ def get_dataset(path, has_class_directories=True):
 def get_image_paths(facedir):
     image_paths = []
     if os.path.isdir(facedir):
-        images = os.listdir(facedir)
-        image_paths = [os.path.join(facedir, img) for img in images]
+        for root, dirs, files in os.walk(facedir, topdown=False):
+            for name in files:
+                image_paths.append(os.path.join(root, name))
+
     return image_paths
 
 
