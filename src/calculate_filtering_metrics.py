@@ -38,6 +38,7 @@ import math
 from tensorflow.python.platform import gfile
 from six import iteritems
 
+
 def main(args):
     dataset = facenet.get_dataset(args.dataset_dir)
   
@@ -99,7 +100,6 @@ def main(args):
                         emb_array = np.delete(emb_array, cls_idx, axis=0)
                         idx_array = np.delete(idx_array, cls_idx, axis=0)
                         lab_array = np.delete(lab_array, cls_idx, axis=0)
-
                         
                 print('Batch %d in %.3f seconds' % (i, time.time()-t))
                 
@@ -108,7 +108,8 @@ def main(args):
             with h5py.File(args.data_file_name, 'w') as f:
                 for key, value in iteritems(mdict):
                     f.create_dataset(key, data=value)
-                        
+
+
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     
@@ -123,6 +124,7 @@ def parse_arguments(argv):
     parser.add_argument('--batch_size', type=int,
         help='Number of images to process in a batch.', default=90)
     return parser.parse_args(argv)
+
 
 if __name__ == '__main__':
     main(parse_arguments(sys.argv[1:]))

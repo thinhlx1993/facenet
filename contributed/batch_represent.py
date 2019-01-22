@@ -5,6 +5,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+import sys
+import argparse
+import importlib
+import time
+
+sys.path.insert(1, "../src")
+import facenet
+import numpy as np
+from sklearn.datasets import load_files
+import tensorflow as tf
+from six.moves import xrange
+
 """
 Allows you to generate embeddings from a directory of images in the format:
 
@@ -41,7 +54,7 @@ The code is heavily inspired by the code from by David Sandberg's ../src/validat
 The concept is inspired by Brandon Amos' github.com/cmusatyalab/openface/blob/master/batch-represent/batch-represent.lua
 """
 
-#----------------------------------------------------
+# ----------------------------------------------------
 # MIT License
 #
 # Copyright (c) 2017 Rakshak Talwar
@@ -63,20 +76,8 @@ The concept is inspired by Brandon Amos' github.com/cmusatyalab/openface/blob/ma
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#----------------------------------------------------
+# ----------------------------------------------------
 
-import os
-import sys
-import argparse
-import importlib
-import time
-
-sys.path.insert(1, "../src")
-import facenet
-import numpy as np
-from sklearn.datasets import load_files
-import tensorflow as tf
-from six.moves import xrange
 
 def main(args):
 
@@ -115,7 +116,7 @@ def main(args):
 			nrof_images = len(paths)
 			nrof_batches = int(np.ceil(1.0*nrof_images / batch_size))
 			emb_array = np.zeros((nrof_images, embedding_size))
-			for i in xrange(nrof_batches):
+			for i in range(nrof_batches):
 				start_index = i*batch_size
 				end_index = min((i+1)*batch_size, nrof_images)
 				paths_batch = paths[start_index:end_index]
@@ -131,15 +132,17 @@ def main(args):
 			np.save(os.path.join(output_dir, "gallery.npy"), labels_array)
 			np.save(os.path.join(output_dir, "signatures.npy"), emb_array)
 
+
 def parse_arguments(argv):
 	parser = argparse.ArgumentParser(description="Batch-represent face embeddings from a given data directory")
 	parser.add_argument('-d', '--data_dir', type=str,
-		help='directory of images with structure as seen at the top of this file.')
+						help='directory of images with structure as seen at the top of this file.')
 	parser.add_argument('-o', '--output_dir', type=str,
-		help='directory containing aligned face patches with file structure as seen at the top of this file.')
+						help='directory containing aligned face patches with file structure as seen at the top of this file.')
 	parser.add_argument('--trained_model_dir', type=str,
-        help='Load a trained model before training starts.')
-	parser.add_argument('--batch_size', type=int, help='Number of images to process in a batch.', default=50)
+						help='Load a trained model before training starts.')
+	parser.add_argument('--batch_size', type=int,
+						help='Number of images to process in a batch.', default=50)
 
 	return parser.parse_args(argv)
 

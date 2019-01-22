@@ -22,9 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+# from __future__ import absolute_import
+# from __future__ import division
+# from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
@@ -36,6 +36,7 @@ import math
 import pickle
 from sklearn.svm import SVC
 
+
 def main(args):
   
     with tf.Graph().as_default():
@@ -43,26 +44,25 @@ def main(args):
         with tf.Session() as sess:
             
             np.random.seed(seed=args.seed)
-            
+            dataset = None
             if args.use_split_dataset:
                 dataset_tmp = facenet.get_dataset(args.data_dir)
                 train_set, test_set = split_dataset(dataset_tmp, args.min_nrof_images_per_class, args.nrof_train_images_per_class)
-                if (args.mode=='TRAIN'):
+                if args.mode == 'TRAIN':
                     dataset = train_set
-                elif (args.mode=='CLASSIFY'):
+                elif args.mode == 'CLASSIFY':
                     dataset = test_set
             else:
                 dataset = facenet.get_dataset(args.data_dir)
 
             # Check that there are at least one training image per class
             for cls in dataset:
-                assert(len(cls.image_paths)>0, 'There must be at least one image for each class in the dataset')            
+                assert(len(cls.image_paths) > 0, 'There must be at least one image for each class in the dataset')
 
-                 
             paths, labels = facenet.get_image_paths_and_labels(dataset)
             
             print('Number of classes: %d' % len(dataset))
-            print('Number of images: %d' % len(paths))
+            print('Number of folder: %d' % len(paths))
             
             # Load the model
             print('Loading feature extraction model')
@@ -89,7 +89,7 @@ def main(args):
             
             classifier_filename_exp = os.path.expanduser(args.classifier_filename)
 
-            if (args.mode=='TRAIN'):
+            if args.mode == 'TRAIN':
                 # Train classifier
                 print('Training classifier')
                 model = SVC(kernel='linear', probability=True)
@@ -103,7 +103,7 @@ def main(args):
                     pickle.dump((model, class_names), outfile)
                 print('Saved classifier model to file "%s"' % classifier_filename_exp)
                 
-            elif (args.mode=='CLASSIFY'):
+            elif args.mode == 'CLASSIFY':
                 # Classify images
                 print('Testing classifier')
                 with open(classifier_filename_exp, 'rb') as infile:
@@ -165,6 +165,7 @@ def parse_arguments(argv):
         help='Use this number of images from each class for training and the rest for testing', default=10)
     
     return parser.parse_args(argv)
+
 
 if __name__ == '__main__':
     main(parse_arguments(sys.argv[1:]))
